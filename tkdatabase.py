@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
-from datetime import *
+from datetime import datetime
+from tkdblist import datechange
 
 def create_database_and_table():
     try:
@@ -250,7 +251,7 @@ def find_records_by_multiple_fields(filters):
         )
 
         if connection.is_connected():
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             keys = list(filters.keys())
             like_keys = []
             exact_keys = []
@@ -260,6 +261,10 @@ def find_records_by_multiple_fields(filters):
                 if key in ['name', 'co_name', 'street', 'address']:  # Add fields you want to match with LIKE
                     like_keys.append(key)
                 else:
+                    if key=="loan_date" or key=="release_date":
+                        filter[key]=datechange(filter[key])
+                        filter[key]=(datetime.strptime(filter[key],"%d-%m-%Y")).strftime("%Y-%m-%d")
+
                     exact_keys.append(key)
             
             # Build WHERE clause
