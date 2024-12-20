@@ -314,21 +314,40 @@ def search():
         
     search_frame=Frame(bill,bg="#535c68")
     search_frame.pack(side=TOP)
-    global comb,combtxt
-    comb=ttk.Combobox(search_frame,width=20,state="readonly",textvariable="stringVar()",font=("Calibri",16, "bold"),height=10)
-   
-    comb["values"]=["கடன் தேதி","கடன் எண்","பெயர்","த/க பெயர்","ஊர்","கடன் தொகை","எடை","பொருள்","Phone No","மீட்ட தேதி"]
-    comb.grid(row=1,columnspan=2,padx=20,pady=20)
+    global comb,combtxt,comb1,combtxt1,comb2,combtxt2
+
+    ####### 1st search
+    comb=ttk.Combobox(search_frame,width=15,state="readonly",textvariable="stringVar()",font=("Calibri",16, "bold"),height=10)
+    comb["values"]=["select","கடன் தேதி","கடன் எண்","பெயர்","த/க பெயர்","ஊர்","கடன் தொகை","எடை","பொருள்","Phone No","மீட்ட தேதி"]
+    comb.grid(row=1,column=0,padx=2,pady=2)
     comb.set("கடன் எண்")
 
-    combtxt=Entry(search_frame,font=lblfont,width=20)
-    combtxt.grid(row=1,column=3,pady=5)
+    combtxt=Entry(search_frame,font=lblfont,width=15)
+    combtxt.grid(row=1,column=1,pady=5)
+
+    #### 2nd search
+    comb1=ttk.Combobox(search_frame,width=15,state="readonly",font=("Calibri",16, "bold"),height=10)
+    comb1["values"]=["select","கடன் தேதி","கடன் எண்","பெயர்","த/க பெயர்","ஊர்","கடன் தொகை","எடை","பொருள்","Phone No","மீட்ட தேதி"]
+    comb1.grid(row=1,column=2,padx=2,pady=2)
+    comb1.set("select")
+
+    combtxt1=Entry(search_frame,font=lblfont,width=15)
+    combtxt1.grid(row=1,column=3,pady=5)
+
+    ####  3rd search
+    comb2=ttk.Combobox(search_frame,width=15,state="readonly",font=("Calibri",16, "bold"),height=10)
+    comb2["values"]=["select","கடன் தேதி","கடன் எண்","பெயர்","த/க பெயர்","ஊர்","கடன் தொகை","எடை","பொருள்","Phone No","மீட்ட தேதி"]
+    comb2.grid(row=1,column=4,padx=2,pady=2)
+    comb2.set("select")
+    
+    combtxt2=Entry(search_frame,font=lblfont,width=15)
+    combtxt2.grid(row=1,column=5,pady=5)
 
     
 
     btnEdit = Button(search_frame, command=detail, text="search", width=15, font=("Calibri", 16, "bold"),
                  fg="white", bg="#2980b9",
-                 bd=0).grid(row=1, column=4, padx=10)
+                 bd=0).grid(row=1, column=6, padx=10)
     
  ############# search frame : END #########################   
 
@@ -349,22 +368,32 @@ def detail():
             pass
 
         selected_value_clear()
+
         id=comb.get()
-        
         c_val=combtxt.get()
+
+        id1=comb1.get()
+        c_val1=combtxt1.get()
+
+        id2=comb2.get()
+        c_val2=combtxt2.get()
         #db
         dict_id={"கடன் தேதி":"loan_date","கடன் எண்":"bill_no","பெயர்":"name","த/க பெயர்":"co_name","ஊர்":"address","கடன் தொகை":"int_amt","எடை":"weight","பொருள்":"item","Phone No":"phone_no","மீட்ட தேதி":"release_date"}
-        like_list=["name","co_name","address","weight","item"]
-        ### to get data based on search 
-        if dict_id[id]=="loan_date" or dict_id[id]=="release_date":
-            c_val=datechange(c_val)
-            c_val=(datetime.strptime(c_val,"%d-%m-%Y")).strftime("%Y-%m-%d")
+        
+        filter_data = {dict_id[key]: value for key, value in [(id, c_val), (id1, c_val1), (id2, c_val2)] if key != "select"}
 
+        
+        print(filter_data)
+         
 
-        if dict_id[id] in like_list:
-            load_data=read_records_alike(dict_id[id],c_val)       #return alike searched value 
-        else:
-            load_data=read_records_by_field(dict_id[id],c_val)       #return exact to searched value
+        
+        
+        load_data=find_records_by_multiple_fields(filter_data)
+
+        # if dict_id[id] in like_list:
+        #     load_data=read_records_alike(dict_id[id],c_val)       #return alike searched value 
+        # else:
+        #     load_data=read_records_by_field(dict_id[id],c_val)       #return exact to searched value
 
         if not load_data:
             messagebox.showwarning(title="error",message="no data found")
@@ -459,7 +488,7 @@ def tkupdate():
     
 
     update_frame=Frame(bill,bg="#535c68")
-    update_frame.pack(side="bottom",fill=X,pady=(5,20),padx=(5,10))
+    update_frame.pack(side="bottom",fill=X,pady=(5,50),padx=(5,20))
 
     title= Label(update_frame, text="update", font=( "Calibri", 16, "bold"),bg="#535c68")
     title.grid(row=0, columnspan=2,padx=5,pady=5)
@@ -487,44 +516,44 @@ def tkupdate():
     txtconame.grid(row=2,column=4,pady=5,padx=10)
 
     lblstreet=Label(update_frame,text="தெரு",font=lblfont,bg="#535c68")
-    lblstreet.grid(row=6,column=1,pady=5,padx=10)
+    lblstreet.grid(row=3,column=1,pady=5,padx=10)
     txtstreet=Entry(update_frame,font=lblfont,width=20,textvariable=street1)
-    txtstreet.grid(row=6,column=2,pady=5,padx=10)
+    txtstreet.grid(row=3,column=2,pady=5,padx=10)
 
     lbladress=Label(update_frame,text="ஊர்",font=lblfont,bg="#535c68")
-    lbladress.grid(row=3,column=1,pady=5,padx=10)
+    lbladress.grid(row=4,column=1,pady=5,padx=10)
     txtadress=Entry(update_frame,font=lblfont,width=20,textvariable=address1)
-    txtadress.grid(row=3,column=2,pady=5,padx=10)
+    txtadress.grid(row=4,column=2,pady=5,padx=10)
 
     lblitem=Label(update_frame,text="பொருள்",font=lblfont,bg="#535c68")
-    lblitem.grid(row=3,column=3,pady=5,padx=10)
+    lblitem.grid(row=3,column=5,pady=5,padx=10)
     txtitem=Entry(update_frame,font=lblfont,width=20,textvariable=item1)
-    txtitem.grid(row=3,column=4,pady=5,padx=10)
+    txtitem.grid(row=3,column=6,pady=5,padx=10)
 
     lblweight=Label(update_frame,text="எடை",font=lblfont,bg="#535c68")
-    lblweight.grid(row=4,column=1,pady=5,padx=10)
+    lblweight.grid(row=2,column=5,pady=5,padx=10)
     txtweight=Entry(update_frame,font=lblfont,width=20,textvariable=weight1)
-    txtweight.grid(row=4,column=2,pady=5,padx=10)
+    txtweight.grid(row=2,column=6,pady=5,padx=10)
 
     lblamount=Label(update_frame,text="கடன் தொகை",font=lblfont,bg="#535c68")
-    lblamount.grid(row=4,column=3,pady=5,padx=10)
+    lblamount.grid(row=1,column=5,pady=5,padx=10)
     txtamount=Entry(update_frame,font=lblfont,width=20,textvariable=amount1)
-    txtamount.grid(row=4,column=4,pady=5,padx=10)
+    txtamount.grid(row=1,column=6,pady=5,padx=10)
 
     lblnoitem=Label(update_frame,text="மொத்த பொருள்",font=lblfont,bg="#535c68")
-    lblnoitem.grid(row=5,column=1,pady=5,padx=10)
+    lblnoitem.grid(row=4,column=5,pady=5,padx=10)
     txtnoitem=Entry(update_frame,font=lblfont,width=20,textvariable=noitem1)
-    txtnoitem.grid(row=5,column=2,pady=5,padx=10)
+    txtnoitem.grid(row=4,column=6,pady=5,padx=10)
 
     lblph=Label(update_frame,text="Phone No",font=lblfont,bg="#535c68")
-    lblph.grid(row=6,column=1,pady=5,padx=10)
+    lblph.grid(row=4,column=3,pady=5,padx=10)
     txtph=Entry(update_frame,font=lblfont,width=20,textvariable=phvar)
-    txtph.grid(row=6,column=2,pady=5,padx=10)
+    txtph.grid(row=4,column=4,pady=5,padx=10)
 
     lblrelese=Label(update_frame,text="மீட்ட தேதி",font=lblfont,bg="#535c68")
-    lblrelese.grid(row=5,column=3,pady=5,padx=10)
+    lblrelese.grid(row=3,column=3,pady=5,padx=10)
     txtrelese=Entry(update_frame,font=lblfont,width=20,textvariable=relese1)
-    txtrelese.grid(row=5,column=4,pady=5,padx=10)
+    txtrelese.grid(row=3,column=4,pady=5,padx=10)
    
 
     def updat():
@@ -546,7 +575,7 @@ def tkupdate():
         relese=datechange(txtrelese.get())
         if relese!="None":
             try:
-                relese=(datetime.strptime(date,"%d-%m-%Y")).strftime("%d-%m-%Y")
+                relese=(datetime.strptime(relese,"%d-%m-%Y")).strftime("%d-%m-%Y")
             except:
                 relese=""
 
@@ -575,7 +604,7 @@ def tkupdate():
     
     btnEdit = Button(update_frame, command=updat, text="update", width=15, font=("Calibri", 16, "bold"),
                     fg="white", bg="#2980b9",
-                    bd=0).grid(row=6, column=4, padx=10)
+                    bd=0).grid(row=0, column=5, padx=10)
 
 ########################  Update frame : END ##############################################################
        
