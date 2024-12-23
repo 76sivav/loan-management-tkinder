@@ -205,9 +205,11 @@ def loan():
 
             if isinstance(loan_print_ok,bool):
                 insert_record(loan_data)                 #tkdatabase - to add data in database
+                print("1")
                 ws_save(loan_data)                       #tkdblist - to add data in excell
+                print("2")
                 loanprint(loan_data,loan_print_ok)       #tkprint - to made document to print
-                
+                print("3")
                 loan()                                   #return to loan page  
             
         ### to check input values is ok       

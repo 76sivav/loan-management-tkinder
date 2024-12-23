@@ -412,8 +412,8 @@ def find_max_bill_no():
             connection.close()
             print("MySQL connection closed.")
 
-# if __name__ == "__main__":
-#     create_database_and_table()
+if __name__ == "__main__":
+    create_database_and_table()
 
 
 

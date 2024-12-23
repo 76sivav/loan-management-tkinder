@@ -65,8 +65,11 @@ def find_bill(b_no):
     s=list(ws.columns)[1]
     c=[]
     for i in range(1,ws.max_row):
-        if b_no==int(str(s[i].value)):
-            return i
+        try:
+            if b_no==int(str(s[i].value)):
+                return i
+        except:
+            pass
     else:
         return 0
 
