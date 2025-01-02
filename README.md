@@ -12,4 +12,7 @@ pawn loan management using tkinder, mysql, openpyxl, python. CRUD operation. bil
  password='user_password'  # Replace with your MySQL password
  
  *****
-
+ run this code in terminal to install all packages:
+ pip install -r requirements.txt
+ ****
+ 
