@@ -81,18 +81,12 @@ def pic():
 ################################### code for loan page start ###############################################################
 def loan():
     global billing_frame
-    try:
-        search_frame.destroy()     #to clear all data 
-        tree_frame.destroy()
-        update_frame.destroy()
-        tkinterest_frameme.destroy()
-    except:
-        pass
-    try:
-        billing_frame.destroy()      # to clear previous opened frame
-    except:
-        pass
-    
+    for frame in ["search_frame", "tree_frame", "update_frame", "tkinterest_frameme", "billing_frame"]:
+        try:
+            globals()[frame].destroy()
+        except KeyError:
+            pass
+
     selected_value_clear() #clear variable values
 
     new_bill_no=int(find_max_bill_no())+1  #get last bill number from database .tkdatabase fn
@@ -103,117 +97,40 @@ def loan():
     title= Label(billing_frame, text="new loan", font=( "Calibri", 16, "bold"),bg="#535c68",height=0)
     title.grid(row=0, columnspan=2,padx=20,pady=20)
 
-    lbldate=Label(billing_frame,text="தேதி",font=lblfont,bg="#535c68")
-    lbldate.grid(row=1,column=1)
-    txtdate=Entry(billing_frame,font=lblfont,width=20,textvariable=date1)
-    txtdate.grid(row=1,column=2,pady=5)
+    # Input Fields
+    def create_input(label_text, row, var, bind_event=False):
+        Label(billing_frame, text=label_text, font=lblfont, bg="#535c68").grid(row=row, column=1)
+        entry = Entry(billing_frame, font=lblfont, width=20, textvariable=var)
+        entry.grid(row=row, column=2, pady=5)
+        if bind_event:
+            entry.bind("<1>", select_time)
 
+    create_input("தேதி", 1, date1, bind_event=True)
     date1.set(tday)
-    txtdate.bind("<1>",select_time)            #to access date frame by on one click on date input field
 
-    lblbill=Label(billing_frame,text="கடன் எண்",font=lblfont,bg="#535c68")
-    lblbill.grid(row=2,column=1)
-    txtbill=Entry(billing_frame,font=lblfont,width=20,textvariable=bill1)
-    txtbill.grid(row=2,column=2,pady=5)
+    create_input("கடன் எண்", 2, bill1)
     try:
         bill1.set(new_bill_no)            #to check bill number is not none
     except:
         bill.set("000")
 
-
-
-
-    lblname=Label(billing_frame,text="பெயர்",font=lblfont,bg="#535c68")
-    lblname.grid(row=3,column=1)
-    txtname=Entry(billing_frame,font=lblfont,width=20)
-    txtname.grid(row=3,column=2,pady=5)
-
-
-    lblconame=Label(billing_frame,text="த/க பெயர்",font=lblfont,bg="#535c68")
-    lblconame.grid(row=4,column=1)
-    txtconame=Entry(billing_frame,font=lblfont,width=20)
-    txtconame.grid(row=4,column=2,pady=5)
-
-    lblstreet=Label(billing_frame,text="தெரு",font=lblfont,bg="#535c68")
-    lblstreet.grid(row=5,column=1)
-    txtstreet=Entry(billing_frame,font=lblfont,width=20,textvariable=street1)
-    txtstreet.grid(row=5,column=2,pady=5)
-
-    lbladress=Label(billing_frame,text="ஊர்",font=lblfont,bg="#535c68")
-    lbladress.grid(row=6,column=1)
-    txtadress=Entry(billing_frame,font=lblfont,width=20)
-    txtadress.grid(row=6,column=2,pady=5)
-
-    lblamount=Label(billing_frame,text="கடன் தொகை",font=lblfont,bg="#535c68")
-    lblamount.grid(row=7,column=1)
-    txtamount=Entry(billing_frame,font=lblfont,width=20)
-    txtamount.grid(row=7,column=2,pady=5)
-
-    lblitem=Label(billing_frame,text="பொருள்",font=lblfont,bg="#535c68")
-    lblitem.grid(row=8,column=1)
-    txtitem=Entry(billing_frame,font=lblfont,width=20)
-    txtitem.grid(row=8,column=2,pady=5)
-
-    lblweight=Label(billing_frame,text="எடை",font=lblfont,bg="#535c68")
-    lblweight.grid(row=9,column=1)
-    txtweight=Entry(billing_frame,font=lblfont,width=20)
-    txtweight.grid(row=9,column=2,pady=5)
-
-    lblnoitem=Label(billing_frame,text="மொத்த பொருள்",font=lblfont,bg="#535c68")
-    lblnoitem.grid(row=10,column=1)
-    txtnoitem=Entry(billing_frame,font=lblfont,width=20)
-    txtnoitem.grid(row=10,column=2,pady=5)
-
-    lblph=Label(billing_frame,text="Phone No.",font=lblfont,bg="#535c68")
-    lblph.grid(row=11,column=1)
-    txtph=Entry(billing_frame,font=lblfont,width=20)
-    txtph.grid(row=11,column=2,pady=5)
+    create_input("பெயர்", 3, name1)
+    create_input("த/க பெயர்", 4, coname1)
+    create_input("தெரு", 5, street1)
+    create_input("ஊர்", 6, address1)
+    create_input("கடன் தொகை", 7, amount1)
+    create_input("பொருள்", 8, item1)
+    create_input("எடை", 9, weight1)
+    create_input("மொத்த பொருள்", 10, noitem1)
+    create_input("Phone No.", 11, phvar)
 
 
     ############################# code to add data ###################################
     def new_loan():    #funtion for add new value after all ok
-
-        #get value from tkinder frame
-        bill=txtbill.get()
-        date=txtdate.get()
-        try:
-            date=datechange(date)     
-        except:
-            pass
-        name=txtname.get()
-        coname=txtconame.get()
-        address=txtadress.get()
-        item=txtitem.get()
-        weight=txtweight.get()
-        amount=txtamount.get()
-        noitem=txtnoitem.get()
-        street=txtstreet.get()
-        phno=txtph.get()
-
-        #to process new loan
-        def new_loan():
-        
-            loan_print_ok=messagebox.askyesnocancel(title="print",message="do you want to print")
-            ##db
-            columns = [
-                "loan_date", "bill_no", "name", "co_name", "street", "address",
-                "int_amt", "weight", "item", "no_item", "phone_no"
-            ]
-            data=[date,bill,name,coname,street,address,amount,weight,item,noitem,phno]
-
-            loan_data=dict(zip(columns,data))
-
-            if isinstance(loan_print_ok,bool):
-                insert_record(loan_data)                 #tkdatabase - to add data in database
-                ws_save(loan_data)                       #tkdblist - to add data in excell
-                loanprint(loan_data,loan_print_ok)       #tkprint - to made document to print
-                
-                loan()                                   #return to loan page  
-            
         ### to check input values is ok       
         try:
-            b=int(bill)                                  #check it is integer and if it already stored
-            if check_bill_no_exists(b):
+            bill = int(bill1.get())                                 #check it is integer and if it already stored
+            if check_bill_no_exists(bill):
                 messagebox.showwarning(title="error",message="bill number exit")
 
                 c=messagebox.askyesno(title="new bill no",
@@ -223,25 +140,36 @@ def loan():
                     bill=new_bill_no
                 else:
                     raise Error
-                    
-            try:
-                phn=int(phno)    
-                if len(phno)!=10:
-                    raise "billerror"
-            except "billerror":
-                    messagebox.showwarning(title="error",message="ph number invalid")
-                    
-            am=int(amount)
-            w=float(weight)
-            n=int(noitem)
-            d=datechange(date)
-
-            #if all ok then goes to add data to database and excell
-            new_loan()   
-
-        except:
-            messagebox.showwarning(title="error",message="invalid entry")
-                       
+                            
+            amount = int(amount1.get())
+            weight = float(weight1.get())
+            no_items = int(noitem1.get())
+            phone_no = phvar.get()
+            if len(phone_no) != 10 or not phone_no.isdigit():
+                raise ValueError("Invalid phone number")
+            
+            loan_data = {
+                "loan_date": date1.get(),
+                "bill_no": bill,
+                "name": name1.get(),
+                "co_name": coname1.get(),
+                "street": street1.get(),
+                "address": address1.get(),
+                "int_amt": amount,
+                "weight": weight,
+                "item": item1.get(),
+                "no_item": no_items,
+                "phone_no": phone_no
+            }
+            loan_ok=messagebox.askyesno(title="save",message="do you want to save")
+            if loan_ok:
+                insert_record(loan_data)
+                ws_save(loan_data)
+                loanprint(loan_data, messagebox.askyesno("Print", "Do you want to print?"))
+            loan()
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
+           
         
     ######################### code for add data : END ############################### 
 
@@ -294,22 +222,11 @@ def tkdelete():                                      #### delete record from bot
 
 def search():
     global search_frame
-    try:
-        search_frame.destroy()
-        tree_frame.destroy()
-        update_frame.destroy()
-        tkinterest_frameme.destroy()
-    except:
-        pass
-    try:
-        tkinterest_frameme.destroy()
-    except:
-        pass
-    try:
-        billing_frame.destroy()
-    except:
-        pass
-    
+    for frame in ["search_frame", "tree_frame", "update_frame", "tkinterest_frameme", "billing_frame"]:
+        try:
+            globals()[frame].destroy()
+        except:
+            pass
     selected_value_clear()
         
     search_frame=Frame(bill,bg="#535c68")
@@ -357,36 +274,25 @@ def search():
 def detail():
         global tree_frame
         
-        try:
-            tree_frame.destroy()
-            update_frame.destroy()
-        except:
-            pass
-        try:
-            tkinterest_frameme.destroy()  
-        except:
-            pass
+        for frame in ["tree_frame", "update_frame", "tkinterest_frameme"]:
+            try:
+                globals()[frame].destroy()
+            except:
+                pass
 
         selected_value_clear()
 
-        id=comb.get()
-        c_val=combtxt.get()
-
-        id1=comb1.get()
-        c_val1=combtxt1.get()
-
-        id2=comb2.get()
-        c_val2=combtxt2.get()
+        # Collect search criteria
+        criteria = [
+        (comb.get(), combtxt.get()),
+        (comb1.get(), combtxt1.get()),
+        (comb2.get(), combtxt2.get())
+        ]
         #db
         dict_id={"கடன் தேதி":"loan_date","கடன் எண்":"bill_no","பெயர்":"name","த/க பெயர்":"co_name","ஊர்":"address","கடன் தொகை":"int_amt","எடை":"weight","பொருள்":"item","Phone No":"phone_no","மீட்ட தேதி":"release_date"}
         
-        filter_data = {dict_id[key]: value for key, value in [(id, c_val), (id1, c_val1), (id2, c_val2)] if key != "select"}
+        filter_data = {dict_id[key]: value for key, value in criteria if key != "select"}
 
-        
-        print(filter_data)
-         
-
-        
         
         load_data=find_records_by_multiple_fields(filter_data)
 
@@ -400,7 +306,7 @@ def detail():
             return search()
             
 
-        
+        #tree frame
         style=ttk.Style()
         style.theme_use("default")
         style.configure("Treeview",highlightthicknes=0,font=('calibri',13),)
@@ -415,10 +321,10 @@ def detail():
         # style.configure("mystyle.treeview",font=("Calibri", 16, "bold"),rowheight=50)
         global tree
         tree=ttk.Treeview(tree_frame,columns=(1,2,3,4,5,6,7,8,9,10,11,12),yscrollcommand=treescroll.set)
-        v=["கடன் தேதி","கடன் எண்","பெயர்","த/க பெயர்","தெரு","ஊர்","கடன் தொகை","எடை","பொருள்","மொத்த பொருள்","Phone No","மீட்ட தேதி"]
+        tree_header=["கடன் தேதி","கடன் எண்","பெயர்","த/க பெயர்","தெரு","ஊர்","கடன் தொகை","எடை","பொருள்","மொத்த பொருள்","Phone No","மீட்ட தேதி"]
         col=[1,2,3,4,5,6,7,8,9,10,11,12]
         for i in range(0,12):
-            tree.heading(f"{col[i]}",text=v[i])
+            tree.heading(f"{col[i]}",text=tree_header[i])
             tree.column(f"{col[i]}",width=5)
         tree["show"]="headings"
         tree.pack(fill="both")
@@ -473,297 +379,233 @@ def select_tree(event):
 
 
 ############## Update frame : Start  ##############################
-
 def tkupdate():
     global update_frame
-    try:
-        billing_frame.destroy()
-    except:
-        pass
-    try:
-        tkinterest_frameme.destroy()
-    except:
-        pass
-     
-    
 
-    update_frame=Frame(bill,bg="#535c68")
-    update_frame.pack(side="bottom",fill=X,pady=(5,50),padx=(5,20))
+    # Destroy existing frames if they exist
+    for frame in ["billing_frame", "tkinterest_frameme"]:
+        try:
+            globals()[frame].destroy()
+        except:
+            pass
 
-    title= Label(update_frame, text="update", font=( "Calibri", 16, "bold"),bg="#535c68")
-    title.grid(row=0, columnspan=2,padx=5,pady=5)
-        
+    # Create the update frame
+    update_frame = Frame(bill, bg="#535c68")
+    update_frame.pack(side="bottom", fill=X, pady=(5, 50), padx=(5, 20))
 
-    lblbill=Label(update_frame,text="கடன் எண்",font=lblfont,bg="#535c68")
-    lblbill.grid(row=1,column=1,pady=5,padx=10)
-    txtbill=Entry(update_frame,font=lblfont,width=20,textvariable=bill1)
-    txtbill.grid(row=1,column=2,pady=5,padx=10)
+    # Title
+    Label(update_frame, text="update", font=("Calibri", 16, "bold"), bg="#535c68").grid(row=0, columnspan=2, padx=5, pady=5)
 
-    lbldate=Label(update_frame,text="தேதி",font=lblfont,bg="#535c68")
-    lbldate.grid(row=1,column=3,pady=5,padx=10)
-    txtdate=Entry(update_frame,font=lblfont,width=20,textvariable=date1)
-    txtdate.grid(row=1,column=4,pady=5,padx=10)
+    # Input fields and labels
+    field_data = {
+        "bill": ("கடன் எண்", bill1, 1, 1),
+        "date": ("தேதி", date1, 1, 3),
+        "name": ("பெயர்", name1, 2, 1),
+        "coname": ("த/க பெயர்", coname1, 2, 3),
+        "street": ("தெரு", street1, 3, 1),
+        "address": ("ஊர்", address1, 4, 1),
+        "item": ("பொருள்", item1, 3, 5),
+        "weight": ("எடை", weight1, 2, 5),
+        "amount": ("கடன் தொகை", amount1, 1, 5),
+        "noitem": ("மொத்த பொருள்", noitem1, 4, 5),
+        "phno": ("Phone No", phvar, 4, 3),
+        "relese": ("மீட்ட தேதி", relese1, 3, 3),
+    }
 
-    lblname=Label(update_frame,text="பெயர்",font=lblfont,bg="#535c68")
-    lblname.grid(row=2,column=1,pady=5,padx=10)
-    txtname=Entry(update_frame,font=lblfont,width=20,textvariable=name1)
-    txtname.grid(row=2,column=2,pady=5,padx=10)
+    entry_widgets = {}  # Dictionary to store Entry widget references
 
+    for key, (label_text, var, row, column) in field_data.items():
+        Label(update_frame, text=label_text, font=lblfont, bg="#535c68").grid(row=row, column=column, pady=5, padx=10)
+        entry_widgets[key] = Entry(update_frame, font=lblfont, width=20, textvariable=var)
+        entry_widgets[key].grid(row=row, column=column + 1, pady=5, padx=10)
 
-    lblconame=Label(update_frame,text="த/க பெயர்",font=lblfont,bg="#535c68")
-    lblconame.grid(row=2,column=3,pady=5,padx=10)
-    txtconame=Entry(update_frame,font=lblfont,width=20,textvariable=coname1)
-    txtconame.grid(row=2,column=4,pady=5,padx=10)
-
-    lblstreet=Label(update_frame,text="தெரு",font=lblfont,bg="#535c68")
-    lblstreet.grid(row=3,column=1,pady=5,padx=10)
-    txtstreet=Entry(update_frame,font=lblfont,width=20,textvariable=street1)
-    txtstreet.grid(row=3,column=2,pady=5,padx=10)
-
-    lbladress=Label(update_frame,text="ஊர்",font=lblfont,bg="#535c68")
-    lbladress.grid(row=4,column=1,pady=5,padx=10)
-    txtadress=Entry(update_frame,font=lblfont,width=20,textvariable=address1)
-    txtadress.grid(row=4,column=2,pady=5,padx=10)
-
-    lblitem=Label(update_frame,text="பொருள்",font=lblfont,bg="#535c68")
-    lblitem.grid(row=3,column=5,pady=5,padx=10)
-    txtitem=Entry(update_frame,font=lblfont,width=20,textvariable=item1)
-    txtitem.grid(row=3,column=6,pady=5,padx=10)
-
-    lblweight=Label(update_frame,text="எடை",font=lblfont,bg="#535c68")
-    lblweight.grid(row=2,column=5,pady=5,padx=10)
-    txtweight=Entry(update_frame,font=lblfont,width=20,textvariable=weight1)
-    txtweight.grid(row=2,column=6,pady=5,padx=10)
-
-    lblamount=Label(update_frame,text="கடன் தொகை",font=lblfont,bg="#535c68")
-    lblamount.grid(row=1,column=5,pady=5,padx=10)
-    txtamount=Entry(update_frame,font=lblfont,width=20,textvariable=amount1)
-    txtamount.grid(row=1,column=6,pady=5,padx=10)
-
-    lblnoitem=Label(update_frame,text="மொத்த பொருள்",font=lblfont,bg="#535c68")
-    lblnoitem.grid(row=4,column=5,pady=5,padx=10)
-    txtnoitem=Entry(update_frame,font=lblfont,width=20,textvariable=noitem1)
-    txtnoitem.grid(row=4,column=6,pady=5,padx=10)
-
-    lblph=Label(update_frame,text="Phone No",font=lblfont,bg="#535c68")
-    lblph.grid(row=4,column=3,pady=5,padx=10)
-    txtph=Entry(update_frame,font=lblfont,width=20,textvariable=phvar)
-    txtph.grid(row=4,column=4,pady=5,padx=10)
-
-    lblrelese=Label(update_frame,text="மீட்ட தேதி",font=lblfont,bg="#535c68")
-    lblrelese.grid(row=3,column=3,pady=5,padx=10)
-    txtrelese=Entry(update_frame,font=lblfont,width=20,textvariable=relese1)
-    txtrelese.grid(row=3,column=4,pady=5,padx=10)
-   
-
+    # Update logic
     def updat():
-        bill=txtbill.get()
-        date=datechange(txtdate.get())
-        name=txtname.get()
-        coname=txtconame.get()
-        street=txtstreet.get()
-        address=txtadress.get()
-        item=txtitem.get()
-        weight=txtweight.get()
-        amount=txtamount.get()
-        noitem=txtnoitem.get()
-        phno=txtph.get()
-        if len(str(phno))!=10:
-            messagebox.showwarning(title="error",message="ph number invalid")
+        # Retrieve values from fields
+        values = {key: widget.get() for key, widget in entry_widgets.items()}
+
+        if len(values["phno"]) != 10:
+            messagebox.showwarning(title="error", message="Phone number invalid")
             return tkupdate()
-           
-        relese=datechange(txtrelese.get())
-        if relese!="None":
-            try:
-                relese=(datetime.strptime(relese,"%d-%m-%Y")).strftime("%d-%m-%Y")
-            except:
-                relese=""
 
-        sdate=(datetime.strptime(date,"%d-%m-%Y")).strftime("%Y-%m-%d")
-        if relese !="None":
-            srelese=(datetime.strptime(relese,"%d-%m-%Y")).strftime("%Y-%m-%d")
-        else:
-            srelese=None
+        try:
+            values["relese"] = (datetime.strptime(values["relese"], "%d-%m-%Y")).strftime("%d-%m-%Y") if values["relese"] != "None" else ""
+        except:
+            pass
+        
+        # values["sdate"] = (datetime.strptime(values["date"], "%d-%m-%Y")).strftime("%Y-%m-%d")
+        # try:
+        #     values["srelese"] = (datetime.strptime(values["relese"], "%d-%m-%Y")).strftime("%Y-%m-%d") if values["relese"] != "None" or values["relese"] != " " else None
+        # except:
+        #     values["srelese"]=None
 
-        dlist=[date,bill,name,coname,street,address,amount,weight,item,noitem,phno,relese] #for excell
-
+        dlist = [values[key] for key in ["date", "bill", "name", "coname", "street", "address", "amount", "weight", "item", "noitem", "phno", "relese"]]
         up_data = {
-                "loan_date":sdate, "bill_no":bill, "name":name, "co_name":coname, "street":street, "address":address,
-                "int_amt":amount, "weight":weight, "item":item, "no_item":noitem, "phone_no":phno,"release_date":srelese
+            "loan_date": values["date"], "bill_no": values["bill"], "name": values["name"], "co_name": values["coname"],
+            "street": values["street"], "address": values["address"], "int_amt": values["amount"], "weight": values["weight"],
+            "item": values["item"], "no_item": values["noitem"], "phone_no": values["phno"], "release_date": values["relese"]
         }
-        if messagebox.askyesno(title="update",message="conform to update"):
-            #db
 
-            update_record(selected_value[1],up_data)
+        if messagebox.askyesno(title="update", message="confirm to update"):
+            try:
+                stat=update_record(selected_value[1], up_data)
+                if stat[0]:
+                    messagebox.showinfo(title="update", message=stat[1])
+                else:
+                    messagebox.showinfo(title="update", message=stat[1])
+                    raise Error
 
-            
-            alter(selected_value[1],dlist)
-            messagebox.showinfo(title="update",message="update copleted")
-            selected_value_clear()
-            return detail()
-    
-    btnEdit = Button(update_frame, command=updat, text="update", width=15, font=("Calibri", 16, "bold"),
-                    fg="white", bg="#2980b9",
-                    bd=0).grid(row=0, column=5, padx=10)
+                alter(selected_value[1], dlist)
+                messagebox.showinfo(title="update", message="Update completed")
+                selected_value_clear()
+                return detail()
+            except:
+                pass
+
+    # Update button
+    Button(update_frame, command=updat, text="update", width=15, font=("Calibri", 16, "bold"), fg="white", bg="#2980b9", bd=0).grid(row=0, column=5, padx=10)
 
 ########################  Update frame : END ##############################################################
        
 
 
-################## interest frame : Start ####################################################################       
+################## interest frame : Start ####################################################################   
+
 def tkinterest():
     global tkinterest_frameme
-    try:
-        billing_frame.destroy()
-    except:
-        pass
-    try:
-        update_frame.destroy()
-    except:
-        pass
-    try:
-        tkinterest_frameme.destroy()
-    except:
-        pass
 
-    
-   
-    
-    tkinterest_frameme=Frame(bill,bg="#535c68")
-    tkinterest_frameme.pack(side="bottom",fill=X,pady=(5,10))
+    # Destroy existing frames if they exist
+    for frame in ["billing_frame", "update_frame", "tkinterest_frameme"]:
+        try:
+            globals()[frame].destroy()
+        except:
+            pass
 
-    title= Label(tkinterest_frameme, text="interest", font=( "Calibri", 16, "bold"),bg="#535c68")
-    title.grid(row=0, columnspan=2,padx=5,pady=5)
-        
+    # Create the interest frame
+    tkinterest_frameme = Frame(bill, bg="#535c68")
+    tkinterest_frameme.pack(side="bottom", fill=X, pady=(5, 10))
 
-    lblbill=Label(tkinterest_frameme,text="கடன் எண்",font=lblfont,bg="#535c68")
-    lblbill.grid(row=1,column=1)
-    txtbill=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=bill1)
-    txtbill.grid(row=1,column=2,pady=5)
+    # Title
+    Label(tkinterest_frameme, text="Interest", font=("Calibri", 16, "bold"), bg="#535c68").grid(row=0, columnspan=2, padx=5, pady=5)
 
-    lbldate=Label(tkinterest_frameme,text="தேதி",font=lblfont,bg="#535c68")
-    lbldate.grid(row=1,column=3)
-    txtdate=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=date1)
-    txtdate.grid(row=1,column=4,pady=5)
+    # Field definitions
+    field_data = {
+        "bill": ("கடன் எண்", bill1, 1, 1),
+        "date": ("தேதி", date1, 1, 3),
+        "name": ("பெயர்", name1, 2, 1),
+        "coname": ("த/க பெயர்", coname1, 2, 3),
+        "address": ("ஊர்", address1, 3, 1),
+        "item": ("பொருள்", item1, 3, 3),
+        "weight": ("எடை", weight1, 4, 1),
+        "amount": ("கடன் தொகை", amount1, 4, 3),
+        "noitem": ("மொத்த பொருள்", noitem1, 4, 1),
+        "relese": ("மீட்ட தேதி", intrel, 5, 3),
+    }
 
-    lblname=Label(tkinterest_frameme,text="பெயர்",font=lblfont,bg="#535c68")
-    lblname.grid(row=2,column=1)
-    txtname=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=name1)
-    txtname.grid(row=2,column=2,pady=5)
+    entry_widgets = {}  # Dictionary to store Entry widget references
 
+    for key, (label_text, var, row, column) in field_data.items():
+        Label(tkinterest_frameme, text=label_text, font=lblfont, bg="#535c68").grid(row=row, column=column, pady=5, padx=10)
+        entry_widgets[key] = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=var)
+        entry_widgets[key].grid(row=row, column=column + 1, pady=5, padx=10)
 
-    lblconame=Label(tkinterest_frameme,text="த/க பெயர்",font=lblfont,bg="#535c68")
-    lblconame.grid(row=2,column=3)
-    txtconame=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=coname1)
-    txtconame.grid(row=2,column=4,pady=5)
-
-    lbladress=Label(tkinterest_frameme,text="ஊர்",font=lblfont,bg="#535c68")
-    lbladress.grid(row=3,column=1)
-    txtadress=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=address1)
-    txtadress.grid(row=3,column=2,pady=5)
-
-    lblitem=Label(tkinterest_frameme,text="பொருள்",font=lblfont,bg="#535c68")
-    lblitem.grid(row=3,column=3)
-    txtitem=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=item1)
-    txtitem.grid(row=3,column=4,pady=5)
-
-    lblweight=Label(tkinterest_frameme,text="எடை",font=lblfont,bg="#535c68")
-    lblweight.grid(row=4,column=1)
-    txtweight=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=weight1)
-    txtweight.grid(row=4,column=2,pady=5)
-
-    lblamount=Label(tkinterest_frameme,text="Amount",font=lblfont,bg="#535c68")
-    lblamount.grid(row=4,column=3)
-    txtamount=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=amount1)
-    txtamount.grid(row=4,column=4,pady=5)
-
-    lblnoitem=Label(tkinterest_frameme,text="மொத்த பொருள்",font=lblfont,bg="#535c68")
-    lblnoitem.grid(row=5,column=1)
-    txtnoitem=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=noitem1)
-    txtnoitem.grid(row=5,column=2,pady=5)
-
-    lbltoday=Label(tkinterest_frameme,text="மீட்பு தேதி",font=lblfont,bg="#535c68")
-    lbltoday.grid(row=5,column=3)
-    txttoday=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=intrel)
-    txttoday.grid(row=5,column=4,pady=5)
-
-    intpay=StringVar()
-    totpay=StringVar()
-        
-    
-    
+    # Variables for interest calculation
+    intpay = StringVar()
+    int_rate = StringVar()
+    reduce_amt=StringVar()
+    int_rate.set("1.5")
+    reduce_amt.set("0")
 
     def intcal():
-        bill=txtbill.get()
-        date=datechange(txtdate.get())
-        name=txtname.get()
-        coname=txtconame.get()
-        address=txtadress.get()
-        item=txtitem.get()
-        weight=txtweight.get()
-        amount=txtamount.get()
-        noitem=txtnoitem.get()
-        redate=datechange(txttoday.get())
-        if redate==None:
-            messagebox.showwarning(title="release date",message="enter release date")
-        elif redate!=tday:
-            messagebox.showwarning(title="loan released",message=f"loan released on {redate}")
-            return
-           
+        try:
+            # Gather input values from entry_widgets
+            inputs = {key: widget.get() for key, widget in entry_widgets.items()}
 
-        dlist=[date,bill,name,coname,address,amount,weight,item,noitem]
-        
-        interestamt=interest(amount,date,redate)
-        
-        
-        lblinterest=Label(tkinterest_frameme,text="interest",font=lblfont,bg="#535c68")
-        lblinterest.grid(row=1,column=6)
-        txtinterest=Entry(tkinterest_frameme,font=lblfont,width=20,textvariable=intpay)
-        txtinterest.grid(row=1,column=7,pady=5)
+            bill = inputs["bill"]
+            date = datechange(inputs["date"])
+            name = inputs["name"]
+            coname = inputs["coname"]
+            address = inputs["address"]
+            item = inputs["item"]
+            weight = inputs["weight"]
+            amount = float(inputs["amount"]) if inputs["amount"] else 0
+            noitem = inputs["noitem"]
+            redate = datechange(inputs["relese"])
+            amount1.set(amount)
 
-        lbltotal=Label(tkinterest_frameme,text="total",font=lblfont,bg="#535c68")
-        lbltotal.grid(row=2,column=6)
-        txttotal=Label(tkinterest_frameme,font=lblfont,width=20)
-        txttotal.grid(row=2,column=7,pady=5)
-        totl=float(interestamt)+float(amount)
-        intpay.set(interestamt)
-        txttotal['text']=totl
-        def tt():
-            global totl
-            totl=float(txtinterest.get())+float(amount)
-            txttotal['text']=int(totl)
-            
+            if redate==None or redate=="none":
+                messagebox.showwarning(title="Release Date", message="Enter release date")
+                return
+
+            if redate != tday:
+                messagebox.showwarning(title="Loan Released", message=f"Loan released on {redate}")
+                return
 
 
-        btnint=Button(tkinterest_frameme,command=tt,text="total",width=5).grid(row=1,column=8)
-        
-        
-        # paylist=[name,date,bill,amount,redate,int(txtinterest.get()),totl,selected _value[12]]
-        
-        def payint():
-            paylist=[name,date,bill,amount,redate,int(txtinterest.get()),txttotal['text']]
-        
-            c=messagebox.askyesno(title="print",message="do  you want to print")
-            interestprint(paylist,c)
+            # Display interest and total
+            Label(tkinterest_frameme, text="asal", font=lblfont, bg="#535c68").grid(row=1, column=6)
+            txtinterest = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=amount1)
+            txtinterest.grid(row=1, column=7, pady=5)
 
-            xlupdate_release(bill,redate)
-            #db
-            sqldate=(datetime.strptime(redate,"%d-%m-%Y")).strftime("%Y-%m-%d")
-            update_release(bill,sqldate)
-            
-            return detail()
-            
+            Label(tkinterest_frameme, text="Interest_rate", font=lblfont, bg="#535c68").grid(row=2, column=6)
+            txtinterest = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=int_rate)
+            txtinterest.grid(row=2, column=7, pady=5)
 
-        btnEdit = Button(tkinterest_frameme, command=payint, text="pay", width=15, font=("Calibri", 16, "bold"),
-                    fg="white", bg="#2980b9",
-                    bd=0).grid(row=3, column=7, padx=10)
-        
-        
+            Label(tkinterest_frameme, text="reduce", font=lblfont, bg="#535c68").grid(row=3, column=6)
+            txttotal = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=reduce_amt)
+            txttotal.grid(row=3, column=7, pady=5)
+
+            Label(tkinterest_frameme, text="Interest", font=lblfont, bg="#535c68").grid(row=4, column=6)
+            txtinterest = Label(tkinterest_frameme, font=lblfont, width=20, textvariable=intpay)
+            txtinterest.grid(row=4, column=7, pady=5)
+
+            Label(tkinterest_frameme, text="Total", font=lblfont, bg="#535c68").grid(row=5, column=6)
+            txttotal = Label(tkinterest_frameme, font=lblfont, width=20)
+            txttotal.grid(row=5, column=7, pady=5)
+
+            #to be called multi times for alter rate and reduce amount
+            def cal_total():
+                rate=int_rate.get()
+                reduce_amount=reduce_amt.get() 
+                release_amt = interest(amount, date, redate, rate,reduce_amount)
+                intpay.set(release_amt["interest"])
+                txttotal["text"] = release_amt["total"]
+
+            #to get total ,interest
+            cal_total()
+
+            # Button to update interest rate
+            Button(tkinterest_frameme, command=cal_total, text="rate", width=5).grid(row=2, column=8)
+
+            # Button to update total
+            Button(tkinterest_frameme, command=cal_total, text="reduce", width=5).grid(row=3, column=8)
 
 
-    btnEdit = Button(tkinterest_frameme, command=intcal, text="interest", width=15, font=("Calibri", 16, "bold"),
-                    fg="white", bg="#2980b9",
-                    bd=0).grid(row=6, column=4, padx=10)
+            def pay_interest():
+                paylist = [
+                    name, date, bill, amount, redate, txtinterest["text"], txttotal["text"]
+                ]
+
+                confirm = messagebox.askyesno(title="Print", message="Do you want to print?")
+                interestprint(paylist, confirm)
+                xlupdate_release(bill, redate)
+
+                sqldate = (datetime.strptime(redate, "%d-%m-%Y")).strftime("%Y-%m-%d")
+                update_release(bill, sqldate)
+
+                detail()
+
+            # Pay button
+            Button(tkinterest_frameme, command=pay_interest, text="Pay", width=15, font=("Calibri", 16, "bold"),
+                   fg="white", bg="#2980b9", bd=0).grid(row=8, column=7, padx=10)
+
+        except Exception as e:
+            messagebox.showerror(title="Error", message=f"An error occurred: {str(e)}")
+
+    # Button to calculate interest``
+    Button(tkinterest_frameme, command=intcal, text="Interest", width=15, font=("Calibri", 16, "bold"),
+           fg="white", bg="#2980b9", bd=0).grid(row=8, column=4, padx=10)
+
 
 ################## interest Frame : END ######################
 

@@ -30,17 +30,19 @@ def datechange(a):
         
 
 ##calculation
-def interest(int_amt,loan_date,re_date):
+def interest(int_amt,loan_date,re_date,int_rate,reduce_amt):
     loan_date=datetime.strptime(loan_date,"%d-%m-%Y")
     re_date=datetime.strptime(re_date,"%d-%m-%Y")
     diff=re_date-loan_date
     intday=int(diff.days)
     if intday<15:
         intday=15
-    intrest=(float(int_amt)*0.015*intday)/30
+    intrest=float(int_amt)*(float(int_rate)/100)*(intday/30)
+    total=int(int_amt)+intrest-int(reduce_amt)
+    values={"total":int(total),"interest":int(intrest)}
     # total=float(intrest)+float(int_amt)
     
-    return (int(intrest)) 
+    return values 
 
 
 

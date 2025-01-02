@@ -95,60 +95,6 @@ def insert_record(data):
             connection.close()
             print("MySQL connection closed.")
 
-# def read_records():
-#     try:
-#         connection = mysql.connector.connect(
-#             host='localhost',
-#             user='root', 
-#             password='root',
-#             database='loan_management'
-#         )
-
-#         if connection.is_connected():
-#             cursor = connection.cursor()
-#             select_query = "SELECT * FROM loan_records"
-#             cursor.execute(select_query)
-#             records = cursor.fetchall()
-#             for record in records:
-#                 print(record)
-
-#     except Error as e:
-#         print(f"Error: {e}")
-
-#     finally:
-#         if connection.is_connected():
-#             cursor.close()
-#             connection.close()
-#             print("MySQL connection closed.")
-
-# def read_specific_record(record_id):
-#     try:
-#         connection = mysql.connector.connect(
-#             host='localhost',
-#             user='root', 
-#             password='root',
-#             database='loan_management'
-#         )
-
-#         if connection.is_connected():
-#             cursor = connection.cursor()
-#             select_query = "SELECT * FROM loan_records WHERE id = %s"
-#             cursor.execute(select_query, (record_id,))
-#             record = cursor.fetchone()
-#             if record:
-#                 print(record)
-#             else:
-#                 print(f"Record with ID {record_id} not found.")
-
-#     except Error as e:
-#         print(f"Error: {e}")
-
-#     finally:
-#         if connection.is_connected():
-#             cursor.close()
-#             connection.close()
-#             print("MySQL connection closed.")
-
 def check_bill_no_exists(bill_no):
     try:
         connection = mysql.connector.connect(
@@ -210,36 +156,6 @@ def read_records_by_field(field_name, field_value):
             connection.close()
             print("MySQL connection closed.")
 
-def read_records_alike(field_name, search_value):
-    try:
-        connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='root',
-            database='loan_management'
-        )
-
-        if connection.is_connected():
-            cursor = connection.cursor(dictionary=True)
-            select_query = f"SELECT * FROM loan_records WHERE {field_name} LIKE %s"
-            value_pattern=f"%{search_value}%"
-            cursor.execute(select_query, (value_pattern,))
-            records = cursor.fetchall()
-            if records:
-                # for record in records:
-                #     print(record)
-                return records
-            else:
-                print(f"No records found matching pattern {value_pattern} in field {field_name}.")
-
-    except Error as e:
-        print(f"Error: {e}")
-
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-            print("MySQL connection closed.")
 
 def find_records_by_multiple_fields(filters):
     try:
@@ -314,16 +230,20 @@ def update_record(record_id, updates):
             password='root',
             database='loan_management'
         )
-
+        updates["loan_date"] = (datetime.strptime(updates["loan_date"], "%d-%m-%Y")).strftime("%Y-%m-%d")
+        try:
+            updates["release_date"] = (datetime.strptime(updates["release_date"], "%d-%m-%Y")).strftime("%Y-%m-%d") if updates["release_date"] != "None" or updates["release_date"] != " " else None
+        except:
+            updates["release_date"]=None
         if connection.is_connected():
             cursor = connection.cursor()
             update_query = f"UPDATE loan_records SET {', '.join([f'{key} = %s' for key in updates.keys()])} WHERE bill_no = %s"
             cursor.execute(update_query, list(updates.values()) + [record_id])
             connection.commit()
-            print("Record updated successfully.")
+            return True,"Record updated successfully."
 
     except Error as e:
-        print(f"Error: {e}")
+        return False,f"Error: {e}"
 
     finally:
         if connection.is_connected():
@@ -346,9 +266,11 @@ def update_release(record_id, rel_date):
             cursor.execute(update_query, (rel_date ,record_id))
             connection.commit()
             print("Record updated successfully.")
+            return True,"Record updated successfully."
 
     except Error as e:
         print(f"Error: {e}")
+        return False,f"Error: {e}"
 
     finally:
         if connection.is_connected():
@@ -371,9 +293,11 @@ def delete_record(record_id):
             cursor.execute(delete_query, (record_id,))
             connection.commit()
             print("Record deleted successfully.")
+            return True,"Record deleted successfully."
 
     except Error as e:
         print(f"Error: {e}")
+        return False,f"Error: {e}"
 
     finally:
         if connection.is_connected():
@@ -412,8 +336,92 @@ def find_max_bill_no():
             connection.close()
             print("MySQL connection closed.")
 
-# if __name__ == "__main__":
-#     create_database_and_table()
+# def read_records():
+#     try:
+#         connection = mysql.connector.connect(
+#             host='localhost',
+#             user='root', 
+#             password='root',
+#             database='loan_management'
+#         )
+
+#         if connection.is_connected():
+#             cursor = connection.cursor()
+#             select_query = "SELECT * FROM loan_records"
+#             cursor.execute(select_query)
+#             records = cursor.fetchall()
+#             for record in records:
+#                 print(record)
+
+#     except Error as e:
+#         print(f"Error: {e}")
+
+#     finally:
+#         if connection.is_connected():
+#             cursor.close()
+#             connection.close()
+#             print("MySQL connection closed.")
+
+# def read_specific_record(record_id):
+#     try:
+#         connection = mysql.connector.connect(
+#             host='localhost',
+#             user='root', 
+#             password='root',
+#             database='loan_management'
+#         )
+
+#         if connection.is_connected():
+#             cursor = connection.cursor()
+#             select_query = "SELECT * FROM loan_records WHERE id = %s"
+#             cursor.execute(select_query, (record_id,))
+#             record = cursor.fetchone()
+#             if record:
+#                 print(record)
+#             else:
+#                 print(f"Record with ID {record_id} not found.")
+
+#     except Error as e:
+#         print(f"Error: {e}")
+
+#     finally:
+#         if connection.is_connected():
+#             cursor.close()
+#             connection.close()
+#             print("MySQL connection closed.")
+# def read_records_alike(field_name, search_value):
+#     try:
+#         connection = mysql.connector.connect(
+#             host='localhost',
+#             user='root',
+#             password='root',
+#             database='loan_management'
+#         )
+
+#         if connection.is_connected():
+#             cursor = connection.cursor(dictionary=True)
+#             select_query = f"SELECT * FROM loan_records WHERE {field_name} LIKE %s"
+#             value_pattern=f"%{search_value}%"
+#             cursor.execute(select_query, (value_pattern,))
+#             records = cursor.fetchall()
+#             if records:
+#                 # for record in records:
+#                 #     print(record)
+#                 return records
+#             else:
+#                 print(f"No records found matching pattern {value_pattern} in field {field_name}.")
+
+#     except Error as e:
+#         print(f"Error: {e}")
+
+#     finally:
+#         if connection.is_connected():
+#             cursor.close()
+#             connection.close()
+#             print("MySQL connection closed.")
+
+if __name__ == "__main__":
+    create_database_and_table()
 
 
 

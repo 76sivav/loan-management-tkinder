@@ -15,6 +15,15 @@ def resource(relative_path):
      return os.path.join(base_path,relative_path)
 
 
+# Check if the folder exists
+def folder_path(path):
+    if not os.path.exists(path):
+        # Create the folder
+        os.makedirs(path)
+        print(f"Folder '{path}' created successfully.")
+    else:
+        print(f"Folder '{path}' already exists.")
+
 
 #print new loan and reprint existing loan
 def loanprint(loan_data,c,l="loan"):
@@ -31,8 +40,11 @@ def loanprint(loan_data,c,l="loan"):
     loan_name=f"{loan_data["bill_no"]} {loan_data["name"]} {l}.docx"
     if l=="loan":
         loan_path=r'.\loan'
+        folder_path(resource(loan_path))
     elif l=="reprint":
         loan_path=r'.\reprint'
+        folder_path(resource(loan_path))
+
     n_path=resource(os.path.join(loan_path,loan_name))
     newloan.save(n_path)
     if c==True:#print the bill if c is true
@@ -57,6 +69,7 @@ def interestprint(paylist,c):
     doc.render({'name':name,'to_day':to_day,'loan_date':loan_date,'bill_no':bill_no,'interest':interest,'total':total,'int_amt':int_amt})
     r_name=f"{bill_no} {name}.docx"
     patth=r'.\relese'
+    folder_path(patth)
     r_path=resource(os.path.join(patth,r_name))
     doc.save(r_path)
     if c==True:
