@@ -1,4 +1,4 @@
-from datetime import date,datetime
+from datetime import date,datetime,timedelta
 
 #change the date format to  "%d-%m-%Y" format 
 def datechange(a):        
@@ -27,19 +27,78 @@ def datechange(a):
             return a.strftime("%d-%m-%Y")
         except:
             return a
-        
+
+## days different calculation
+def days_calculation(loan_date,re_date):
+    loan_date=datechange(loan_date)
+    loan_date = datetime.strptime(loan_date, "%d-%m-%Y")
+    if re_date:
+        re_date=datechange(re_date)
+        re_date = datetime.strptime(re_date, "%d-%m-%Y")
+    else:
+        re_date = datetime.now()
+    
+
+    # Calculate years and months
+    diff_years = re_date.year - loan_date.year
+    diff_months = re_date.month - loan_date.month
+
+    # Adjust if months are negative
+    if diff_months < 0:
+        diff_months += 12
+        diff_years -= 1
+
+    # Calculate remaining days
+    if re_date.day >= loan_date.day:
+        remaining_days = re_date.day - loan_date.day
+    else:
+        # Borrow days from the previous month
+        previous_month = (re_date.replace(day=1) - timedelta(days=1)).day  # Last day of the previous month
+        remaining_days = (previous_month - loan_date.day) + re_date.day
+        diff_months -= 1  # Adjust months if we borrow days
+        if diff_months < 0:  # Handle negative months after borrowing
+            diff_months += 12
+            diff_years -= 1
+    
+    # Output the results
+    result={"years": diff_years, "months": diff_months, "days": remaining_days}
+    print(f"Years: {diff_years}, Remaining Months: {diff_months}, Remaining Days: {remaining_days}")
+    return result
+
 
 ##calculation
 def interest(int_amt,loan_date,re_date,int_rate,reduce_amt):
-    loan_date=datetime.strptime(loan_date,"%d-%m-%Y")
-    re_date=datetime.strptime(re_date,"%d-%m-%Y")
-    diff=re_date-loan_date
-    intday=int(diff.days)
-    if intday<15:
-        intday=15
-    intrest=float(int_amt)*(float(int_rate)/100)*(intday/30)
+    date_diff=days_calculation(loan_date,re_date)
+
+    if date_diff["days"]<15 and date_diff["months"]==0 and date_diff["years"]==0:
+        date_diff["days"]=15
+
+    if int_rate=="1.5&2":
+        if date_diff["years"]<1:
+            int_month=float(int_amt)*(1.5/100)*date_diff["months"]
+            int_days=float(int_amt)*(1.5/100)*(date_diff["days"]/30)
+            intrest=int_days+int_month
+        else:
+            year_1st=float(int_amt)*(1.5/100)*12    #for 1st year 1.5% interest (12 month)
+
+            int_year=float(int_amt)*(2/100)*((date_diff["years"]-1)*12)
+            int_month=float(int_amt)*(2/100)*date_diff["months"]
+            int_days=float(int_amt)*(2/100)*(date_diff["days"]/30)
+            
+            intrest=int_days+int_month+int_year+year_1st
+
+    else:
+        int_year=float(int_amt)*(float(int_rate)/100)*(date_diff["years"]*12)
+        int_month=float(int_amt)*(float(int_rate)/100)*date_diff["months"]
+        int_days=float(int_amt)*(float(int_rate)/100)*(date_diff["days"]/30)
+            
+        intrest=int_days+int_month+int_year
+
+
+    int_amt=float(int_amt)
+    reduce_amt=float(reduce_amt)
     total=int(int_amt)+intrest-int(reduce_amt)
-    values={"total":int(total),"interest":int(intrest)}
+    values={"total":int(total),"interest":int(intrest),"days":date_diff}
     # total=float(intrest)+float(int_amt)
     
     return values 

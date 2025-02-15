@@ -74,7 +74,10 @@ def insert_record(data):
         if connection.is_connected():
             cursor = connection.cursor()
             table_name = 'loan_records'
-            data["loan_date"]=(datetime.strptime((data["loan_date"]),"%d-%m-%Y")).strftime("%Y-%m-%d")
+            try:
+                data["loan_date"]=(datetime.strptime((data["loan_date"]),"%d-%m-%Y")).strftime("%Y-%m-%d")
+            except:
+                pass
             # columns = [
             #     "loan_date", "bill_no", "name", "co_name", "street", "address",
             #     "int_amt", "weight", "item", "no_item", "phone_no"
@@ -230,7 +233,10 @@ def update_record(record_id, updates):
             password='root',
             database='loan_management'
         )
-        updates["loan_date"] = (datetime.strptime(updates["loan_date"], "%d-%m-%Y")).strftime("%Y-%m-%d")
+        try:
+            updates["loan_date"] = (datetime.strptime(updates["loan_date"], "%d-%m-%Y")).strftime("%Y-%m-%d")
+        except:
+            pass
         try:
             updates["release_date"] = (datetime.strptime(updates["release_date"], "%d-%m-%Y")).strftime("%Y-%m-%d") if updates["release_date"] != "None" or updates["release_date"] != " " else None
         except:

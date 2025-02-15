@@ -544,12 +544,16 @@ def tkinterest():
 
             # Display interest and total
             Label(tkinterest_frameme, text="asal", font=lblfont, bg="#535c68").grid(row=1, column=6)
-            txtinterest = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=amount1)
-            txtinterest.grid(row=1, column=7, pady=5)
+            Label(tkinterest_frameme, font=lblfont, width=20, textvariable=amount1).grid(row=1, column=7, pady=5)
 
             Label(tkinterest_frameme, text="Interest_rate", font=lblfont, bg="#535c68").grid(row=2, column=6)
-            txtinterest = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=int_rate)
-            txtinterest.grid(row=2, column=7, pady=5)
+            # txtinterest = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=int_rate)
+            # txtinterest.grid(row=2, column=7, pady=5)
+
+            int_comb=ttk.Combobox(tkinterest_frameme,width=15,state="readonly",font=("Calibri",16, "bold"),height=10)
+            int_comb["values"]=["1.5&2","1.5","2"]
+            int_comb.grid(row=2, column=7, pady=5)
+            int_comb.set("1.5&2")
 
             Label(tkinterest_frameme, text="reduce", font=lblfont, bg="#535c68").grid(row=3, column=6)
             txttotal = Entry(tkinterest_frameme, font=lblfont, width=20, textvariable=reduce_amt)
@@ -565,7 +569,8 @@ def tkinterest():
 
             #to be called multi times for alter rate and reduce amount
             def cal_total():
-                rate=int_rate.get()
+                rate=int_comb.get()
+                print(rate)
                 reduce_amount=reduce_amt.get() 
                 release_amt = interest(amount, date, redate, rate,reduce_amount)
                 intpay.set(release_amt["interest"])
@@ -582,9 +587,10 @@ def tkinterest():
 
 
             def pay_interest():
-                paylist = [
-                    name, date, bill, amount, redate, txtinterest["text"], txttotal["text"]
-                ]
+                # paylist = [
+                #     name, date, bill, amount, redate, txtinterest["text"], txttotal["text"]
+                # ]
+                paylist={'name':name,'to_day':redate,'loan_date':date,'bill_no':bill,'interest':txtinterest["text"],'total':txttotal["text"],'int_amt':amount}
 
                 confirm = messagebox.askyesno(title="Print", message="Do you want to print?")
                 interestprint(paylist, confirm)

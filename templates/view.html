@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Records Search</title>
+    <script>
+        function showMessage(message) {
+            alert(message);
+        }
+    </script>
+</head>
+<body>
+    <a href="{{url_for('home')}}">home</a>
+    <a href="{{url_for('loan_form')}}">new loan</a>
+    <h2>Search Loan Records</h2>
+    <form method="POST">
+        <!-- <label>Name:</label> <input type="text" name="name"><br> -->
+        <!-- <label>Company Name:</label> <input type="text" name="co_name"><br>
+        <label>Street:</label> <input type="text" name="street"><br>
+        <label>Address:</label> <input type="text" name="address"><br>
+        <label>Loan Date (DD-MM-YYYY):</label> <input type="text" name="loan_date"><br>
+        <label>Release Date (DD-MM-YYYY):</label> <input type="text" name="release_date"><br> -->
+        
+        <select name="search1" id="s1">
+            <option value="select" >select</option>
+            {% for (key,val) in klist.items() %}
+            <option value="{{val}}">{{key}}</option>
+            {% endfor %}
+            <input type="text" name="s1_value" id="s1">
+        </select>
+        <select name="search2" id="s2">
+            <option value="select">select</option>
+            {% for (key,val) in klist.items() %}
+            <option value="{{val}}">{{key}}</option>
+            {% endfor %}
+            <input type="text" name="s2_value" id="s2">
+        </select>
+        <select name="search3" id="s3">
+            <option value="select" >select</option>
+            {% for (key,val) in klist.items() %}
+            <option value="{{val}}">{{key}}</option>
+            {% endfor %}
+            <input type="text" id="s3" name="s3_value">
+        </select>
+
+        <input type="submit" value="Search">
+    </form>
+
+    <h3>Results:</h3>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Street</th>
+            <th>Address</th>
+            <th>Loan Date</th>
+            <th>Release Date</th>
+            <th>update</th>
+            <th>delete</th>
+            <th>interest</th>
+            <th>reprint</th>
+
+        </tr>
+        {% for record in records %}
+        <tr>
+            <td>{{ record['id'] }}</td>
+            <td>{{ record['name'] }}</td>
+            <td>{{ record['co_name'] }}</td>
+            <td>{{ record['street'] }}</td>
+            <td>{{ record['address'] }}</td>
+            <td>{{ record['loan_date'] }}</td>
+            <td>{{ record['release_date'] }}</td>
+            <td><a href="{{url_for('update_loan',num=record['bill_no'])}}">update</a></td>
+            <td><a href="{{url_for('delete_loan',num=record['bill_no'])}}" onclick="return confirm('Are you sure?')">delete</a></td>
+            <td><a href="{{url_for('loan_interest',num=record['bill_no'])}}">interest</a></td>
+            <td><a href="{{url_for('reprint_loan',num=record['bill_no'])}}" onclick="return confirm('Are you sure?')">reprint</a></td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+                {% for category,message in messages %}
+                    showMessage("{{ message }}");
+                {% endfor %}
+            </script>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

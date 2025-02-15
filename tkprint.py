@@ -58,16 +58,17 @@ def loanprint(loan_data,c,l="loan"):
 def interestprint(paylist,c):
     doc=DocxTemplate(resource('src/omm.docx')) 
  
-    name=paylist[0]
-    loan_date=paylist[1]
-    bill_no=paylist[2]
-    int_amt=paylist[3]
-    to_day=paylist[4]
-    interest=paylist[5]
-    total=paylist[6]
+    # name=paylist[0]
+    # loan_date=paylist[1]
+    # bill_no=paylist[2]
+    # int_amt=paylist[3]
+    # to_day=paylist[4]
+    # interest=paylist[5]
+    # total=paylist[6]
 
-    doc.render({'name':name,'to_day':to_day,'loan_date':loan_date,'bill_no':bill_no,'interest':interest,'total':total,'int_amt':int_amt})
-    r_name=f"{bill_no} {name}.docx"
+    # doc.render({'name':name,'to_day':to_day,'loan_date':loan_date,'bill_no':bill_no,'interest':interest,'total':total,'int_amt':int_amt})
+    doc.render(paylist)
+    r_name=f"{paylist['bill_no']} {paylist['name']}.docx"
     patth=r'.\relese'
     folder_path(patth)
     r_path=resource(os.path.join(patth,r_name))
